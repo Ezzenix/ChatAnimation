@@ -1,6 +1,5 @@
 package ezzenix.chatanimation.mixin;
 
-import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,8 +8,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
@@ -25,13 +24,14 @@ import java.util.List;
 @Mixin(ChatHud.class)
 public class ChatMixin {
 	@Shadow private int scrolledLines;
+	//@Shadow @Final private List<ChatHudLine> messages;
 	@Shadow @Final private List<ChatHudLine.Visible> visibleMessages;
 	@Shadow private boolean hasUnreadNewMessages;
 	@Shadow @Final private MinecraftClient client;
-	@Shadow @Final private static final Logger LOGGER = LogUtils.getLogger();
+	//@Shadow @Final private static final Logger LOGGER = LogUtils.getLogger();
 
-	@Shadow private void drawIndicatorIcon(DrawContext context, int x, int y, MessageIndicator.Icon icon) { }
-	@Shadow private int getIndicatorX(ChatHudLine.Visible line) { return 0; }
+	//@Shadow private void drawIndicatorIcon(DrawContext context, int x, int y, MessageIndicator.Icon icon) { }
+	//@Shadow private int getIndicatorX(ChatHudLine.Visible line) { return 0; }
 	@Shadow private static double getMessageOpacityMultiplier(int age) { return 0; }
 	@Shadow private boolean isChatHidden() { return false; }
 	@Shadow private int getLineHeight() { return 0; }
@@ -45,8 +45,10 @@ public class ChatMixin {
 	}
 	@Shadow public int getWidth() { return 0; }
 
-	@Unique private final float fadeOffsetYScale = 0.6f; // scale * lineHeight
-	@Unique private final float fadeTime = 3f; // ticks
+	@Unique private final ArrayList<Long> messageTimestamps = new ArrayList<>();
+
+	@Unique private final float fadeOffsetYScale = 0.8f; // scale * lineHeight
+	@Unique private final float fadeTime = 130;
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	public void render(DrawContext context, int currentTick, int mouseX, int mouseY, CallbackInfo ci) {
@@ -55,23 +57,28 @@ public class ChatMixin {
 		int textBackgroundOpacityFinal;
 		int chatOpacityFinal;
 		int ticksAlive;
+
 		if (this.isChatHidden()) {
 			return;
 		}
+
 		int visibleLineCount = this.getVisibleLineCount();
 		int visibleMessagesCount = this.visibleMessages.size();
 		if (visibleMessagesCount == 0) {
 			return;
 		}
+
 		boolean isFocused = this.isChatFocused();
 		float chatScale = (float)this.getChatScale();
 		int k = MathHelper.ceil((float)this.getWidth() / chatScale);
 		int scaledWindowHeight = context.getScaledWindowHeight();
+
 		context.getMatrices().push();
 		context.getMatrices().scale(chatScale, chatScale, 1.0f);
 		context.getMatrices().translate(4.0f, 0.0f, 0.0f);
+
 		int chatBottomY = MathHelper.floor((float)(scaledWindowHeight - 40) / chatScale);
-		int n = this.getMessageIndex(this.toChatLineX(mouseX), this.toChatLineY(mouseY));
+		//int n = this.getMessageIndex(this.toChatLineX(mouseX), this.toChatLineY(mouseY));
 		double chatOpacity = this.client.options.getChatOpacity().getValue() * (double)0.9f + (double)0.1f;
 		double textBackgroundOpacity = this.client.options.getTextBackgroundOpacity().getValue();
 		double chatLineSpacing = this.client.options.getChatLineSpacing().getValue();
@@ -79,22 +86,29 @@ public class ChatMixin {
 		int lineSpacing = (int)Math.round(-8.0 * (chatLineSpacing + 1.0) + 4.0 * chatLineSpacing);
 		int index = 0;
 		int chatDisplacementY = 0;
+		float maxDisplacement = (float)lineHeight * fadeOffsetYScale;
+
 		for (int r = 0; r + this.scrolledLines < this.visibleMessages.size() && r < visibleLineCount; ++r) {
 			int s = r + this.scrolledLines;
 			ChatHudLine.Visible visible = this.visibleMessages.get(s);
 			if (visible == null || (ticksAlive = currentTick - visible.addedTime()) >= 200 && !isFocused) continue;
-			if (r == 0 && ticksAlive < fadeTime) {
-				float maxDisplacement = (float)lineHeight*fadeOffsetYScale;
-				chatDisplacementY = (int)(maxDisplacement - (((float)ticksAlive/fadeTime)*maxDisplacement));
+			long timestamp = messageTimestamps.get(s);
+			long timeAlive = System.currentTimeMillis() - timestamp;
+			if (r == 0 && timeAlive < fadeTime) {
+				chatDisplacementY = (int)(maxDisplacement - ((timeAlive/fadeTime)*maxDisplacement));
 			}
+
 			double opacity = isFocused ? 1.0 : getMessageOpacityMultiplier(ticksAlive);
-			if (ticksAlive < fadeTime) {
-				opacity = opacity * MathHelper.clamp(ticksAlive/fadeTime, 0, 1);
+			if (timeAlive < fadeTime) {
+				opacity = opacity * (0.5 + MathHelper.clamp(timeAlive/fadeTime, 0, 1)/2);
 			}
+
 			chatOpacityFinal = (int)(255.0 * opacity * chatOpacity);
 			textBackgroundOpacityFinal = (int)(255.0 * opacity * textBackgroundOpacity);
 			++index;
+
 			if (chatOpacityFinal <= 3) continue;
+
 			y = chatBottomY - r * lineHeight + chatDisplacementY;
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0f, 0.0f, 50.0f);
@@ -142,8 +156,14 @@ public class ChatMixin {
 		}
 		context.getMatrices().pop();
 
-
-
 		ci.cancel();
+	}
+
+	@Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", at = @At("TAIL"))
+	private void addMessage(Text message, MessageSignatureData signature, int ticks, MessageIndicator indicator, boolean refresh, CallbackInfo ci) {
+		messageTimestamps.add(0, System.currentTimeMillis());
+		while (this.messageTimestamps.size() > 100) {
+			this.messageTimestamps.remove(this.messageTimestamps.size() - 1);
+		}
 	}
 }

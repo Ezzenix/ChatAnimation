@@ -3,7 +3,7 @@
 	"id": "chatanimation",
 	"version": "${version}",
 	"name": "ChatAnimation",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Adds animation to the chat.",
 	"authors": [
 		"Ezzenix"
 	],
