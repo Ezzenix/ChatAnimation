@@ -1,6 +1,5 @@
 package ezzenix.chatanimation.mixin;
 
-import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -11,7 +10,6 @@ import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,9 +34,9 @@ public class ChatMixin {
 	@Shadow private boolean isChatHidden() { return false; }
 	@Shadow private int getLineHeight() { return 0; }
 	@Shadow private boolean isChatFocused() { return false; }
-	@Shadow private double toChatLineX(double x) { return 0; }
-	@Shadow private double toChatLineY(double y) { return 0; }
-	@Shadow private int getMessageIndex(double chatLineX, double chatLineY) { return 0; }
+	//@Shadow private double toChatLineX(double x) { return 0; }
+	//@Shadow private double toChatLineY(double y) { return 0; }
+	//@Shadow private int getMessageIndex(double chatLineX, double chatLineY) { return 0; }
 	@Shadow public int getVisibleLineCount() { return 0; }
 	@Shadow public double getChatScale() {
 		return 0;
@@ -150,9 +148,9 @@ public class ChatMixin {
 			if (ticksAlive != ae) {
 				textBackgroundOpacityFinal = af > 0 ? 170 : 96;
 				w = this.hasUnreadNewMessages ? 0xCC3333 : 0x3333AA;
-				y = k + 4;
-				context.fill(y, -af, y + 2, -af - chatOpacityFinal, w + (textBackgroundOpacityFinal << 24));
-				context.fill(y + 2, -af, y + 1, -af - chatOpacityFinal, 0xCCCCCC + (textBackgroundOpacityFinal << 24));
+				int x = k + 4;
+				context.fill(x, -af, x + 2, -af - chatOpacityFinal, w + (textBackgroundOpacityFinal << 24));
+				context.fill(x + 2, -af, x + 1, -af - chatOpacityFinal, 0xCCCCCC + (textBackgroundOpacityFinal << 24));
 			}
 		}
 		context.getMatrices().pop();
