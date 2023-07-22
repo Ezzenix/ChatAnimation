@@ -92,14 +92,15 @@ public class ChatMixin {
 			int s = r + this.scrolledLines;
 			ChatHudLine.Visible visible = this.visibleMessages.get(s);
 			if (visible == null || (ticksAlive = currentTick - visible.addedTime()) >= 200 && !isFocused) continue;
-			long timestamp = messageTimestamps.get(s);
+
+			long timestamp = messageTimestamps.get(r);
 			long timeAlive = System.currentTimeMillis() - timestamp;
-			if (r == 0 && timeAlive < fadeTime) {
+			if (r == 0 && timeAlive < fadeTime && this.scrolledLines == 0) {
 				chatDisplacementY = (int)(maxDisplacement - ((timeAlive/fadeTime)*maxDisplacement));
 			}
 
 			double opacity = isFocused ? 1.0 : getMessageOpacityMultiplier(ticksAlive);
-			if (timeAlive < fadeTime) {
+			if (timeAlive < fadeTime && this.scrolledLines == 0) {
 				opacity = opacity * (0.5 + MathHelper.clamp(timeAlive/fadeTime, 0, 1)/2);
 			}
 
@@ -162,7 +163,7 @@ public class ChatMixin {
 	@Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", at = @At("TAIL"))
 	private void addMessage(Text message, MessageSignatureData signature, int ticks, MessageIndicator indicator, boolean refresh, CallbackInfo ci) {
 		messageTimestamps.add(0, System.currentTimeMillis());
-		while (this.messageTimestamps.size() > 100) {
+		while (this.messageTimestamps.size() > this.visibleMessages.size()) {
 			this.messageTimestamps.remove(this.messageTimestamps.size() - 1);
 		}
 	}
