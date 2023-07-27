@@ -3,6 +3,7 @@ package ezzenix.chatanimation.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
@@ -86,6 +87,15 @@ public class ChatMixin {
 	private float applyYOffset(float y) {
 		// Apply the offset
 		calculateYOffset();
+
+		// Raised mod compatibility
+		if (FabricLoader.getInstance().getObjectShare().get("raised:hud") instanceof Integer distance) {
+			// for Raised 1.2.0+
+			y -= distance;
+		} else if (FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance) {
+			y -= distance;
+		}
+
 		return y + chatDisplacementY;
 	}
 
