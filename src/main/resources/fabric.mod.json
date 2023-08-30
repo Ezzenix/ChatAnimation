@@ -8,15 +8,14 @@
 		"Ezzenix"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/Ezzenix/ChatAnimation"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/chatanimation/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-          "ezzenix.chatanimation.ChatAnimation"
+		  "ezzenix.chatanimation.ChatAnimation"
 		]
 	},
 	"mixins": [
@@ -24,10 +23,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.14.21",
-		"minecraft": "~1.20.1",
+		"minecraft": "~1.19.3",
 		"java": ">=17"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
