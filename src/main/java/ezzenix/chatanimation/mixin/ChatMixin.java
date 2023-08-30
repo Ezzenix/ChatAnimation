@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
@@ -106,10 +107,10 @@ public class ChatMixin {
         return opacity;
     }
 
-    @ModifyVariable(method = "render", at = @At(
-            value = "STORE"
+    @Redirect(method = "render", at = @At(value = "INVOKE",
+        target = "Lnet/minecraft/client/gui/hud/ChatHudLine$Visible;indicator()Lnet/minecraft/client/gui/hud/MessageIndicator;"
     ))
-    private MessageIndicator removeMessageIndicator(MessageIndicator messageIndicator) {
+    private MessageIndicator removeMessageIndicator(ChatHudLine.Visible instance) {
         // Don't allow the chat indicator bar to be rendered
         return null;
     }
