@@ -1,6 +1,5 @@
 package ezzenix.chatanimation.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -8,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,13 +50,12 @@ public class ChatMixin {
     private int chatLineIndex;
     private int chatDisplacementY = 0;
 
-    @Inject(method = "render", at = @At(
-        value = "INVOKE",
-        target = "Lnet/minecraft/client/gui/hud/ChatHudLine$Visible;addedTime()I"
-    ))
-    public void getChatLineIndex(CallbackInfo ci, @Local(ordinal = 13) int chatLineIndex) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHudLine$Visible;addedTime()I"),
+            locals = LocalCapture.CAPTURE_FAILHARD
+    )
+    public void getChatLineIndex(MatrixStack matrices, int currentTick, CallbackInfo ci, int i, int j, boolean bl, float f, int k, double d, double e, double g, int l, double h, int m, int n, ChatHudLine.Visible visible) {
         // Capture which chat line is currently being rendered
-        this.chatLineIndex = chatLineIndex;
+        this.chatLineIndex = m;
     }
 
     private void calculateYOffset() {
@@ -73,10 +73,10 @@ public class ChatMixin {
 
     @ModifyArg(method = "render", index = 1, at = @At(
         value = "INVOKE",
-        target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V",
+        target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V",
         ordinal = 1
     ))
-    private float applyYOffset(float y) {
+    private double applyYOffset(double y) {
         // Apply the offset
         calculateYOffset();
 
@@ -91,7 +91,7 @@ public class ChatMixin {
         return y + chatDisplacementY;
     }
 
-    @ModifyVariable(method = "render", ordinal = 3, at = @At(
+    @ModifyVariable(method = "render", name = "p", at = @At(
         value = "STORE"
     ))
     private double modifyOpacity(double originalOpacity) {
