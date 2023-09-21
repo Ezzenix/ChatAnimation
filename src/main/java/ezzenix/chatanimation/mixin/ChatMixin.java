@@ -91,8 +91,8 @@ public class ChatMixin {
         return y + chatDisplacementY;
     }
 
-    @ModifyVariable(method = "render", name = "p", at = @At(
-        value = "STORE"
+    @ModifyVariable(method = "render", ordinal = 4, at = @At(
+        value = "STORE", ordinal = 0
     ))
     private double modifyOpacity(double originalOpacity) {
         double opacity = originalOpacity;
