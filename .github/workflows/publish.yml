@@ -1,0 +1,16 @@
+on:
+  release:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: chatanimation
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          
+          curseforge-id: chatanimation
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
