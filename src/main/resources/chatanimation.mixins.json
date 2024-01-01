@@ -3,9 +3,13 @@
 	"package": "ezzenix.chatanimation.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"ChatMixin"
+
 	],
 	"injectors": {
 		"defaultRequire": 1
-	}
+	},
+	"client": [
+		"ChatScreenMixin",
+		"ChatHudMixin"
+	]
 }

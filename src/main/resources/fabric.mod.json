@@ -3,7 +3,7 @@
 	"id": "chatanimation",
 	"version": "${version}",
 	"name": "ChatAnimation",
-	"description": "Adds animation to the chat.",
+	"description": "Adds animations to the chat.",
 	"authors": [
 		"Ezzenix"
 	],
