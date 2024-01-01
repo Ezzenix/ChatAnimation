@@ -7,6 +7,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Build Mod
+        run: ./gradlew build  # Adjust for your build tool
+
+      - name: Publish to Modrinth and CurseForge
       - uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: chatanimation
