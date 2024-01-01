@@ -58,8 +58,8 @@ public class ChatMixin {
 	private int chatDisplacementY = 0;
 
 	@Inject(method = "render", at = @At(
-		value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/hud/ChatHudLine$Visible;addedTime()I"
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/hud/ChatHudLine$Visible;addedTime()I"
 	))
 	public void getChatLineIndex(CallbackInfo ci, @Local(ordinal = 13) int chatLineIndex) {
 		// Capture which chat line is currently being rendered
@@ -80,9 +80,9 @@ public class ChatMixin {
 	}
 
 	@ModifyArg(method = "render", index = 1, at = @At(
-		value = "INVOKE",
-		target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V",
-		ordinal = 1
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V",
+			ordinal = 1
 	))
 	private float applyYOffset(float y) {
 		// Apply the offset
@@ -100,7 +100,7 @@ public class ChatMixin {
 	}
 
 	@ModifyVariable(method = "render", ordinal = 3, at = @At(
-		value = "STORE"
+			value = "STORE"
 	))
 	private double modifyOpacity(double originalOpacity) {
 		double opacity = originalOpacity;
