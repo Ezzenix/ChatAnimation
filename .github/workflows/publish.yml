@@ -9,8 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - uses: actions/setup-java@v4
         with:
