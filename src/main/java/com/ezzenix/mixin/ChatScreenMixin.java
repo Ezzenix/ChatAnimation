@@ -43,7 +43,14 @@ public class ChatScreenMixin {
         context.getMatrices().translate(0, offsetY);
     }
 
-    @Inject(method = "render", at = @At("TAIL"))
+    @Inject(
+        method = "render",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V",
+            shift = At.Shift.AFTER
+        )
+    )
     private void renderEnd(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         context.getMatrices().translate(0, -offsetY);
     }
