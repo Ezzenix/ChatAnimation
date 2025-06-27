@@ -55,6 +55,30 @@ public class ChatScreenMixin {
         context.getMatrices().translate(0, -offsetY);
     }
 
+    @Inject(
+        method = "render",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/screen/Screen;render(Lnet/minecraft/client/gui/DrawContext;IIF)V",
+            shift = At.Shift.BEFORE
+        )
+    )
+    private void renderScreenStart(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        context.getMatrices().translate(0, offsetY);
+    }
+
+    @Inject(
+        method = "render",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/screen/Screen;render(Lnet/minecraft/client/gui/DrawContext;IIF)V",
+            shift = At.Shift.AFTER
+        )
+    )
+    private void renderScreenEnd(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        context.getMatrices().translate(0, -offsetY);
+    }
+
     @Inject(method = "removed", at = @At("HEAD"))
     private void onClosed(CallbackInfo ci) {
         wasOpenedLastFrame = false;
