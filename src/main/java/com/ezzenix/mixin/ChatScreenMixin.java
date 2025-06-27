@@ -18,8 +18,8 @@ public class ChatScreenMixin {
     @Unique private long lastOpenTime = 0;
     @Unique private float offsetY = 0;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;render(Lnet/minecraft/client/gui/DrawContext;IIIZ)V", shift = At.Shift.AFTER))
-    private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "render", at = @At("HEAD"))
+    private void renderStart(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null) {
             if (!wasOpenedLastFrame && !client.player.isSleeping()) {
@@ -40,11 +40,16 @@ public class ChatScreenMixin {
 
         offsetY = modifiedAlpha * FADE_OFFSET * screenFactor;
 
-        context.getMatrices().translate(0, offsetY, 0);
+        context.getMatrices().translate(0, offsetY);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void renderEnd(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        context.getMatrices().translate(0, -offsetY, 0);
+        context.getMatrices().translate(0, -offsetY);
+    }
+
+    @Inject(method = "removed", at = @At("HEAD"))
+    private void onClosed(CallbackInfo ci) {
+        wasOpenedLastFrame = false;
     }
 }
