@@ -1,5 +1,6 @@
 package com.ezzenix.mixin;
 
+import com.ezzenix.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,19 +17,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ChatScreenMixin {
     @Unique private boolean wasOpenedLastFrame = false;
     @Unique private long lastOpenTime = 0;
-    @Unique private float offsetY = 0;
+    @Unique private float displacement = 0;
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void renderStart(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player != null) {
-            if (!wasOpenedLastFrame && !client.player.isSleeping()) {
-                wasOpenedLastFrame = true;
-                lastOpenTime = System.currentTimeMillis();
-            }
+    @Unique
+    private float calculateDisplacement() {
+        if (!ModConfig.getConfig().enableTextFieldAnimation) {
+            return 0;
         }
 
-        float FADE_TIME = 170;
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.player != null && !wasOpenedLastFrame && !client.player.isSleeping()) {
+            wasOpenedLastFrame = true;
+            lastOpenTime = System.currentTimeMillis();
+        }
+
+        float FADE_TIME = (float) ModConfig.getConfig().fadeTimeTextField;
         float FADE_OFFSET = 8;
         float screenFactor = (float)client.getWindow().getHeight() / 1080;
         float timeSinceOpen = Math.min((float)(System.currentTimeMillis() - lastOpenTime), FADE_TIME);
@@ -38,9 +41,17 @@ public class ChatScreenMixin {
         float c3 = c1 + 1;
         float modifiedAlpha = c3 * alpha * alpha * alpha - c1 * alpha * alpha;
 
-        offsetY = modifiedAlpha * FADE_OFFSET * screenFactor;
+        return modifiedAlpha * FADE_OFFSET * screenFactor;
+    }
 
-        context.getMatrices().translate(0, offsetY);
+    @Inject(method = "render", at = @At("HEAD"))
+    private void renderStart(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        displacement = calculateDisplacement();
+
+        if (displacement != 0) {
+            context.getMatrices().pushMatrix();
+            context.getMatrices().translate(0, displacement);
+        }
     }
 
     @Inject(
@@ -52,7 +63,9 @@ public class ChatScreenMixin {
         )
     )
     private void renderEnd(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        context.getMatrices().translate(0, -offsetY);
+        if (displacement != 0) {
+            context.getMatrices().popMatrix();
+        }
     }
 
     @Inject(
@@ -64,7 +77,10 @@ public class ChatScreenMixin {
         )
     )
     private void renderScreenStart(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        context.getMatrices().translate(0, offsetY);
+        if (displacement != 0) {
+            context.getMatrices().pushMatrix();
+            context.getMatrices().translate(0, displacement);
+        }
     }
 
     @Inject(
@@ -76,7 +92,9 @@ public class ChatScreenMixin {
         )
     )
     private void renderScreenEnd(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        context.getMatrices().translate(0, -offsetY);
+        if (displacement != 0) {
+            context.getMatrices().popMatrix();
+        }
     }
 
     @Inject(method = "removed", at = @At("HEAD"))

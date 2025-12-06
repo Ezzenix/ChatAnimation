@@ -1,5 +1,6 @@
 package com.ezzenix;
 
+import com.ezzenix.config.ModConfig;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ public class ChatAnimation implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModConfig.getConfig().load();
 		LOGGER.info("ChatAnimation initialized!");
 	}
 }

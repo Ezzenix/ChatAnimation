@@ -8,21 +8,22 @@
 		"Ezzenix"
 	],
 	"contact": {
-		"sources": "https://github.com/Ezzenix/ChatAnimation"
+		"sources": "https://github.com/Ezzenix/ChatAnimation",
+		"homepage": "https://modrinth.com/mod/chatanimation",
+		"issues": "https://github.com/Ezzenix/ChatAnimation/issues"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/chatanimation/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"com.ezzenix.ChatAnimation"
-		]
+		"main": [ "com.ezzenix.ChatAnimation" ],
+		"modmenu": [ "com.ezzenix.ModMenuImpl" ]
 	},
 	"mixins": [
 		"chatanimation.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
-		"minecraft": ">=1.21.6"
+		"minecraft": ">=1.21.10"
 	}
 }
