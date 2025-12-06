@@ -12,15 +12,8 @@ Improves chat visuals by adding smooth animations.
 <img alt="curseforge" height="52" src="https://raw.githubusercontent.com/intergrav/devins-badges/c7fd18efdadd1c3f12ae56b49afd834640d2d797/assets/cozy/available/curseforge_vector.svg">
 </a>
 
-</div>
-
-#
-
-Configuring the mod on Fabric is possible with [Mod Menu](https://modrinth.com/mod/modmenu).
-
-The mod also removes the message indicator, the line to the left of messages.
-
-
-
+<br><br>
 
 <img src="https://cdn.modrinth.com/data/DnNYdJsx/images/784121d04549ae52370fc6d252cf68a0ca6d34ed.gif" width=70%></img>
+
+</div>
