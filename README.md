@@ -16,7 +16,7 @@ Improves chat visuals by adding smooth animations.
 
 #
 
-Configuring the mod is possible with [Mod Menu](https://modrinth.com/mod/modmenu).
+Configuring the mod on Fabric is possible with [Mod Menu](https://modrinth.com/mod/modmenu).
 
 The mod also removes the message indicator, the line to the left of messages.
 
