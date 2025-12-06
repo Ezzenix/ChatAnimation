@@ -14,9 +14,9 @@ Improves chat visuals by adding smooth animations.
 
 </div>
 
----
+#
 
-Configuring the mod is possible with [Mod Menu](https://modrinth.com/mod/modmenu)
+Configuring the mod is possible with [Mod Menu](https://modrinth.com/mod/modmenu).
 
 The mod also removes the message indicator, the line to the left of messages.
 
