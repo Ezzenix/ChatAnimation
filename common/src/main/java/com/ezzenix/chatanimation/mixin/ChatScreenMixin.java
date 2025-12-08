@@ -41,56 +41,34 @@ public class ChatScreenMixin {
         return modifiedAlpha * FADE_OFFSET * screenFactor;
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void renderStart(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        displacement = calculateDisplacement();
-
-        if (displacement != 0) {
-            context.pose().pushMatrix();
-            context.pose().translate(0, displacement);
-        }
-    }
-
     @Inject(
         method = "render",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V",
+            shift = At.Shift.BEFORE
+        )
+    )
+    private void renderStart(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        displacement = calculateDisplacement();
+
+        if (displacement != 0) {
+            context.pose().pushPose();
+            context.pose().translate(0f, displacement, 0f);
+        }
+    }
+
+    @Inject(
+        method = "render",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/components/EditBox;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
             shift = At.Shift.AFTER
         )
     )
     private void renderEnd(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (displacement != 0) {
-            context.pose().popMatrix();
-        }
-    }
-
-    @Inject(
-        method = "render",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
-            shift = At.Shift.BEFORE
-        )
-    )
-    private void renderScreenStart(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (displacement != 0) {
-            context.pose().pushMatrix();
-            context.pose().translate(0, displacement);
-        }
-    }
-
-    @Inject(
-        method = "render",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
-            shift = At.Shift.AFTER
-        )
-    )
-    private void renderScreenEnd(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (displacement != 0) {
-            context.pose().popMatrix();
+            context.pose().popPose();
         }
     }
 

@@ -40,13 +40,13 @@ public class ChatComponentMixin {
 	@Inject(method = "render", at = @At("HEAD"))
 	private void onRenderStart(GuiGraphics context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
 		float displacement = calculateDisplacement();
-		context.pose().pushMatrix();
-		context.pose().translate(0, displacement);
+		context.pose().pushPose();
+		context.pose().translate(0f, displacement, 0f);
 	}
 
 	@Inject(method = "render", at = @At("TAIL"))
 	private void onRenderEnd(GuiGraphics context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
-		context.pose().popMatrix();
+		context.pose().popPose();
 	}
 
 	@Inject(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V", at = @At("TAIL"))
