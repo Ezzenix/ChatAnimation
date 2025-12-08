@@ -13,7 +13,7 @@
         "issues": "https://github.com/Ezzenix/ChatAnimation/issues"
     },
     "license": "${license}",
-    "icon": "icon.png",
+    "icon": "chatanimation.png",
     "environment": "client",
     "entrypoints": {
         "main": [
