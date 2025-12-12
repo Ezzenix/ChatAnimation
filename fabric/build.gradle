@@ -1,6 +1,8 @@
 plugins {
     id 'multiloader-loader'
     id 'fabric-loom'
+    id 'com.modrinth.minotaur'
+    id 'net.darkhax.curseforgegradle'
 }
 
 repositories {
@@ -67,4 +69,24 @@ loom.remapConfigurations.configureEach {
             attribute(loaderAttribute, 'fabric')
         }
     }
+}
+
+tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    group = "publishing"
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    def file = upload(892086, remapJar)
+    file.releaseType = "release"
+    file.addModLoader("fabric", "quilt")
+    file.gameVersions = ["1.21.1"]
+    file.changelog = "Changes"
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "chatanimation"
+    versionName = "Chat Animation ${version}"
+    uploadFile = remapJar
+    loaders = ["fabric", "quilt"]
+    gameVersions = ["1.21.1"]
 }

@@ -2,6 +2,8 @@ plugins {
     id 'multiloader-loader'
     id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+    id 'com.modrinth.minotaur'
+    id 'net.darkhax.curseforgegradle'
 }
 base {
     archivesName = "${mod_id}-forge-${minecraft_version}"
@@ -86,4 +88,24 @@ sourceSets.configureEach {
             }
         }
     }
+}
+
+tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    group = "publishing"
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    def file = upload(892086, jar)
+    file.releaseType = "release"
+    file.addModLoader("forge")
+    file.gameVersions = ["1.21.1"]
+    file.changelog = "Changes"
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "chatanimation"
+    versionName = "Chat Animation ${version}"
+    uploadFile = jar
+    loaders = ["forge"]
+    gameVersions = ["1.21.1"]
 }
