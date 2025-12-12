@@ -2,6 +2,7 @@ package com.ezzenix.chatanimation.mixin;
 
 import com.ezzenix.chatanimation.config.ModConfig;
 import net.minecraft.client.GuiMessageTag;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
@@ -37,15 +38,15 @@ public class ChatComponentMixin {
 		return (maxDisplacement - (alpha*maxDisplacement));
 	}
 
-	@Inject(method = "render", at = @At("HEAD"))
-	private void onRenderStart(GuiGraphics context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
+	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V", at = @At("HEAD"))
+	private void onRenderStart(GuiGraphics context, Font p_458144_, int p_283491_, int p_282406_, int p_283111_, boolean p_316855_, boolean p_480243_, CallbackInfo ci) {
 		float displacement = calculateDisplacement();
 		context.pose().pushMatrix();
 		context.pose().translate(0, displacement);
 	}
 
-	@Inject(method = "render", at = @At("TAIL"))
-	private void onRenderEnd(GuiGraphics context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
+	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V", at = @At("TAIL"))
+	private void onRenderEnd(GuiGraphics context, Font p_458144_, int p_283491_, int p_282406_, int p_283111_, boolean p_316855_, boolean p_480243_, CallbackInfo ci) {
 		context.pose().popMatrix();
 	}
 
