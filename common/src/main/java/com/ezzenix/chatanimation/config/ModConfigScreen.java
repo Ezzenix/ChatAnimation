@@ -53,7 +53,7 @@ public class ModConfigScreen extends Screen {
 
 		this.addRenderableWidget(Button.builder(Component.literal("Done"), button -> {
 			if (this.minecraft != null) {
-				this.minecraft.setScreen(null);
+				this.minecraft.setScreen(parentScreen);
 			}
 		}).bounds(x+spacingX, y+spacingY*5, buttonWidth, buttonHeight).build());
 	}
