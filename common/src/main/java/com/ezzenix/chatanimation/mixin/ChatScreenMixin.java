@@ -1,6 +1,8 @@
 package com.ezzenix.chatanimation.mixin;
 
 import com.ezzenix.chatanimation.config.ModConfig;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -42,55 +44,47 @@ public class ChatScreenMixin {
     }
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void renderStart(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void updateAnimationState(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         displacement = calculateDisplacement();
-
-        if (displacement != 0) {
-            context.pose().pushMatrix();
-            context.pose().translate(0, displacement);
-        }
     }
 
-    @Inject(
+    @WrapOperation(
         method = "render",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V",
-            shift = At.Shift.AFTER
+            target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"
         )
     )
-    private void renderEnd(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void wrapChatBackground(GuiGraphics instance, int minX, int minY, int maxX, int maxY, int color, Operation<Void> original) {
         if (displacement != 0) {
-            context.pose().popMatrix();
+            instance.pose().pushMatrix();
+            instance.pose().translate(0, displacement);
+        }
+
+        original.call(instance, minX, minY, maxX, maxY, color);
+
+        if (displacement != 0) {
+            instance.pose().popMatrix();
         }
     }
 
-    @Inject(
+    @WrapOperation(
         method = "render",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
-            shift = At.Shift.BEFORE
+            target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
         )
     )
-    private void renderScreenStart(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void wrapScreenRender(ChatScreen instance, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, Operation<Void> original) {
         if (displacement != 0) {
-            context.pose().pushMatrix();
-            context.pose().translate(0, displacement);
+            guiGraphics.pose().pushMatrix();
+            guiGraphics.pose().translate(0, displacement);
         }
-    }
 
-    @Inject(
-        method = "render",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
-            shift = At.Shift.AFTER
-        )
-    )
-    private void renderScreenEnd(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        original.call(instance, guiGraphics, mouseX, mouseY, partialTick);
+
         if (displacement != 0) {
-            context.pose().popMatrix();
+            guiGraphics.pose().popMatrix();
         }
     }
 

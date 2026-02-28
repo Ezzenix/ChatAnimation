@@ -1,8 +1,10 @@
 package com.ezzenix.chatanimation.mixin;
 
 import com.ezzenix.chatanimation.config.ModConfig;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.GuiMessageTag;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
@@ -38,16 +40,29 @@ public class ChatComponentMixin {
 		return (maxDisplacement - (alpha*maxDisplacement));
 	}
 
-	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V", at = @At("HEAD"))
-	private void onRenderStart(GuiGraphics context, Font p_458144_, int p_283491_, int p_282406_, int p_283111_, boolean p_316855_, boolean p_480243_, CallbackInfo ci) {
+	@WrapOperation(
+		method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IIZ)V"
+		)
+	)
+	private void wrapRender(
+		ChatComponent instance, ChatComponent.ChatGraphicsAccess guiGraphicsAccess, int i, int j, boolean bl, Operation<Void> original,
+		@Local(argsOnly = true) GuiGraphics context
+	) {
 		float displacement = calculateDisplacement();
-		context.pose().pushMatrix();
-		context.pose().translate(0, displacement);
-	}
 
-	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V", at = @At("TAIL"))
-	private void onRenderEnd(GuiGraphics context, Font p_458144_, int p_283491_, int p_282406_, int p_283111_, boolean p_316855_, boolean p_480243_, CallbackInfo ci) {
-		context.pose().popMatrix();
+		if (displacement != 0) {
+			context.pose().pushMatrix();
+			context.pose().translate(0, displacement);
+		}
+
+		original.call(instance, guiGraphicsAccess, i, j, bl);
+
+		if (displacement != 0) {
+			context.pose().popMatrix();
+		}
 	}
 
 	@Inject(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V", at = @At("TAIL"))
