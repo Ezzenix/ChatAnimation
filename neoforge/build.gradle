@@ -12,10 +12,6 @@ neoForge {
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
     }
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
     runs {
         configureEach {
             systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
@@ -60,7 +56,7 @@ tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurs
     def file = upload(892086, jar)
     file.releaseType = "release"
     file.addModLoader("neoforge")
-    file.gameVersions = ["1.21.11"]
+    file.gameVersions = ["26.1"]
     file.changelog = "Changes"
 }
 
@@ -70,5 +66,5 @@ modrinth {
     versionName = "Chat Animation ${version}"
     uploadFile = jar
     loaders = ["neoforge"]
-    gameVersions = ["1.21.11"]
+    gameVersions = ["26.1"]
 }

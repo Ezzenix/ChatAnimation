@@ -4,7 +4,7 @@ import com.ezzenix.chatanimation.config.ModConfig;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ChatScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -43,48 +43,41 @@ public class ChatScreenMixin {
         return modifiedAlpha * FADE_OFFSET * screenFactor;
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void updateAnimationState(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    /**
+     * Wrap background fill
+     */
+    @WrapOperation(
+            method = "extractRenderState",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V")
+    )
+    private void wrapBackgroundFill(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int col, Operation<Void> original) {
         displacement = calculateDisplacement();
-    }
-
-    @WrapOperation(
-        method = "render",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"
-        )
-    )
-    private void wrapChatBackground(GuiGraphics instance, int minX, int minY, int maxX, int maxY, int color, Operation<Void> original) {
-        if (displacement != 0) {
-            instance.pose().pushMatrix();
-            instance.pose().translate(0, displacement);
-        }
-
-        original.call(instance, minX, minY, maxX, maxY, color);
 
         if (displacement != 0) {
-            instance.pose().popMatrix();
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(0, displacement);
+            original.call(graphics, x0, y0, x1, y1, col);
+            graphics.pose().popMatrix();
+        } else {
+            original.call(graphics, x0, y0, x1, y1, col);
         }
     }
 
+    /**
+     * Wrap text field and suggestions
+     */
     @WrapOperation(
-        method = "render",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
-        )
+            method = "extractRenderState",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V")
     )
-    private void wrapScreenRender(ChatScreen instance, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, Operation<Void> original) {
+    private void wrapSuperAndSuggestions(ChatScreen instance, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, Operation<Void> original) {
         if (displacement != 0) {
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(0, displacement);
-        }
-
-        original.call(instance, guiGraphics, mouseX, mouseY, partialTick);
-
-        if (displacement != 0) {
-            guiGraphics.pose().popMatrix();
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(0, displacement);
+            original.call(instance, graphics, mouseX, mouseY, delta);
+            graphics.pose().popMatrix();
+        } else {
+            original.call(instance, graphics, mouseX, mouseY, delta);
         }
     }
 

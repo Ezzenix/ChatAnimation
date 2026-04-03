@@ -4,9 +4,10 @@ import com.ezzenix.chatanimation.config.ModConfig;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.GuiMessageTag;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.GuiMessageSource;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MessageSignature;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,32 +42,31 @@ public class ChatComponentMixin {
 	}
 
 	@WrapOperation(
-		method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V",
+		method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;IIILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;Z)V",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IIZ)V"
+			target = "Lnet/minecraft/client/gui/components/ChatComponent;extractRenderState(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;)V"
 		)
 	)
 	private void wrapRender(
-		ChatComponent instance, ChatComponent.ChatGraphicsAccess guiGraphicsAccess, int i, int j, boolean bl, Operation<Void> original,
-		@Local(argsOnly = true) GuiGraphics context
+			ChatComponent instance, ChatComponent.ChatGraphicsAccess queueMessage, int restrictedMessageWidth, int restrictedMessage, ChatComponent.DisplayMode alpha, Operation<Void> original, @Local(argsOnly = true) GuiGraphicsExtractor graphics
 	) {
 		float displacement = calculateDisplacement();
 
 		if (displacement != 0) {
-			context.pose().pushMatrix();
-			context.pose().translate(0, displacement);
+			graphics.pose().pushMatrix();
+			graphics.pose().translate(0, displacement);
 		}
 
-		original.call(instance, guiGraphicsAccess, i, j, bl);
+		original.call(instance, queueMessage, restrictedMessageWidth, restrictedMessage, alpha);
 
 		if (displacement != 0) {
-			context.pose().popMatrix();
+			graphics.pose().popMatrix();
 		}
 	}
 
-	@Inject(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V", at = @At("TAIL"))
-	private void addMessage(Component chatComponent, MessageSignature headerSignature, GuiMessageTag tag, CallbackInfo ci) {
+	@Inject(method = "addMessage", at = @At("TAIL"))
+	private void addMessage(Component contents, MessageSignature signature, GuiMessageSource source, GuiMessageTag tag, CallbackInfo ci) {
 		lastMessageTime = System.currentTimeMillis();
 	}
 }

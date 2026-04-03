@@ -1,6 +1,6 @@
 plugins {
     id 'multiloader-loader'
-    id 'fabric-loom'
+    id 'net.fabricmc.fabric-loom'
     id 'com.modrinth.minotaur'
     id 'net.darkhax.curseforgegradle'
 }
@@ -11,14 +11,11 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
-    }
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    modImplementation "com.terraformersmc:modmenu:${mod_menu_version}"
+    implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+    implementation "com.terraformersmc:modmenu:${mod_menu_version}"
 }
 
 loom {
@@ -63,22 +60,15 @@ sourceSets.configureEach {
         }
     }
 }
-loom.remapConfigurations.configureEach {
-    configurations.named(it.name) {
-        attributes {
-            attribute(loaderAttribute, 'fabric')
-        }
-    }
-}
 
 tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
     group = "publishing"
     apiToken = System.getenv("CURSEFORGE_TOKEN")
 
-    def file = upload(892086, remapJar)
+    def file = upload(892086, jar)
     file.releaseType = "release"
     file.addModLoader("fabric", "quilt")
-    file.gameVersions = ["1.21.11"]
+    file.gameVersions = ["26.1"]
     file.changelog = "Changes"
 }
 
@@ -86,7 +76,7 @@ modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = "chatanimation"
     versionName = "Chat Animation ${version}"
-    uploadFile = remapJar
+    uploadFile = jar
     loaders = ["fabric", "quilt"]
-    gameVersions = ["1.21.11"]
+    gameVersions = ["26.1"]
 }
