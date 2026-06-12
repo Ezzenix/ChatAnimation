@@ -44,7 +44,7 @@ public class ChatComponentMixin {
 		context.pose().translate(0f, displacement, 0f);
 	}
 
-	@Inject(method = "render", at = @At("TAIL"))
+	@Inject(method = "render", at = @At("RETURN"))
 	private void onRenderEnd(GuiGraphics context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
 		context.pose().popPose();
 	}
