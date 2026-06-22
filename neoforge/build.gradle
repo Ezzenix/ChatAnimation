@@ -56,7 +56,7 @@ tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurs
     def file = upload(892086, jar)
     file.releaseType = "release"
     file.addModLoader("neoforge")
-    file.gameVersions = ["26.1"]
+    file.gameVersions = ["26.2"]
     file.changelog = "Changes"
 }
 
@@ -66,5 +66,5 @@ modrinth {
     versionName = "Chat Animation ${version}"
     uploadFile = jar
     loaders = ["neoforge"]
-    gameVersions = ["26.1"]
+    gameVersions = ["26.2"]
 }
