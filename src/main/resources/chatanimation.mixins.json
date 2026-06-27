@@ -1,0 +1,17 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "com.ezzenix.chatanimation.mixin",
+	"refmap": "${id}.refmap.json",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [],
+	"client": [
+		"ChatComponentMixin",
+		"ChatScreenMixin",
+		"GuiMessageMixin"
+	],
+	"server": [],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

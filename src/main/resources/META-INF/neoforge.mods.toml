@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "*"
+issueTrackerURL = "https://github.com/Ezzenix/ChatAnimation/issues"
+license = "MIT"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayURL = "https://modrinth.com/mod/chatanimation"
+modUrl = "https://modrinth.com/mod/chatanimation"
+displayName = "${name}"
+authors = "Ezzenix"
+description = '''
+${description}
+'''
+logoFile = "${id}/icon.png"
+logoBlur = false
+
+[[mixins]]
+config = "${id}.mixins.json"
+
+[[dependencies.${id}]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraftVersion},)"
+ordering = "NONE"
+side = "CLIENT"

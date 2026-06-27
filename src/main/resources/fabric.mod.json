@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "${id}",
+	"version": "${version}",
+	"name": "${name}",
+	"description": "${description}",
+	"authors": [
+		"Ezzenix"
+	],
+	"contact": {
+		"sources": "https://github.com/Ezzenix/ChatAnimation",
+		"homepage": "https://modrinth.com/mod/chatanimation",
+		"issues": "https://github.com/Ezzenix/ChatAnimation/issues"
+	},
+	"license": "MIT",
+	"icon": "chatanimation.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"${group}.ChatAnimation"
+		],
+		"modmenu": [
+			"${group}.impl.ModMenuImpl"
+		]
+	},
+	"mixins": [
+		"${id}.mixins.json"
+	],
+	"depends": {
+		"fabricloader": "*",
+		"minecraft": ">=${minecraftVersion}"
+	}
+}
