@@ -28,12 +28,11 @@ fun fetchLatestChangelog() : String {
 }
 
 publishMods {
+	dryRun = false
 	changelog = fetchLatestChangelog()
 
 	if (mod.isFabric) {
-		modLoaders.addAll("fabric", "quilt")
-	} else {
-		modLoaders.add(mod.loader)
+		modLoaders.add("quilt")
 	}
 
     modrinth {
@@ -43,9 +42,7 @@ publishMods {
 		if (mod.isFabric) {
 			optional("modmenu")
 		}
-		if (mod.hasProp("supported_versions")) {
-			minecraftVersionList(mod.prop("supported_versions"))
-		}
+		minecraftVersionList(mod.prop("supported_versions", mod.prop("minecraft_version")))
     }
 
     curseforge {
@@ -56,9 +53,7 @@ publishMods {
 		if (mod.isFabric) {
 			optional("modmenu")
 		}
-		if (mod.hasProp("supported_versions")) {
-			minecraftVersionList(mod.prop("supported_versions"))
-		}
+		minecraftVersionList(mod.prop("supported_versions", mod.prop("minecraft_version")))
     }
 }
 
