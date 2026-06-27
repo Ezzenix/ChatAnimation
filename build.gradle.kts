@@ -28,7 +28,6 @@ fun fetchLatestChangelog() : String {
 }
 
 publishMods {
-	dryRun = true
 	changelog = fetchLatestChangelog()
 
 	if (mod.isFabric) {
