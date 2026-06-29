@@ -78,23 +78,15 @@ public class ChatAnimation implements ModInitializer {
 
 	public static void wrap(GuiGraphicsExtractor graphics, float displacement, Runnable runnable) {
 		if (displacement != 0) {
-			//? if >1.21.1 {
+			//~ if >1.21.1 'pushPose' -> 'pushMatrix'
 			graphics.pose().pushMatrix();
+			//~ if >1.21.1 '(0, displacement, 0)' -> '(0, displacement)'
 			graphics.pose().translate(0, displacement);
-			//? } else {
-			/*graphics.pose().pushPose();
-			graphics.pose().translate(0, displacement, 0);
-			*///? }
 		}
-
 		runnable.run();
-
 		if (displacement != 0) {
-			//? if >1.21.1 {
+			//~ if >1.21.1 'popPose' -> 'popMatrix'
 			graphics.pose().popMatrix();
-			//? } else {
-			/*graphics.pose().popPose();
-			 *///? }
 		}
 	}
 
