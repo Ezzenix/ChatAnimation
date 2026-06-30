@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -50,68 +51,8 @@ public class ChatScreenMixin {
         wasOpenedLastFrame = false;
     }
 
-	//? 1.20.1 {
-	/*@WrapMethod(method = "render")
-	private void wrapRender(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, Operation<Void> original) {
-		ChatAnimation.wrap(guiGraphics, calculateDisplacement(), () -> original.call(guiGraphics, mouseX, mouseY, partialTick));
-	}
-
 	@WrapOperation(
-		method = "render",
-		at= @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V"
-		)
-	)
-	private void wrapRenderInput(ChatScreen instance, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, Operation<Void> original) {
-		ChatAnimation.wrap(guiGraphics, -calculateDisplacement(), () -> original.call(instance, guiGraphics, mouseX, mouseY, partialTick));
-	}
-	*///? }
-
-    //? 1.21.1 || 1.21.10 {
-    /*@WrapMethod(method = "render")
-    private void wrapRender(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, Operation<Void> original) {
-        ChatAnimation.wrap(guiGraphics, calculateDisplacement(), () -> original.call(guiGraphics, mouseX, mouseY, partialTick));
-    }
-
-    @WrapOperation(
-            method = "render",
-            at= @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIIZ)V"
-            )
-    )
-    private void wrapRenderComponent(ChatComponent instance, GuiGraphicsExtractor guiGraphics, int tickCount, int mouseX, int mouseY, boolean focused, Operation<Void> original) {
-        ChatAnimation.wrap(guiGraphics, -calculateDisplacement(), () -> original.call(instance, guiGraphics, tickCount, mouseX, mouseY, focused));
-    }
-    *///? }
-
-    //? 1.21.11 {
-	/*@WrapOperation(
-		method = "render",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"
-		)
-	)
-	private void wrapChatBackground(GuiGraphicsExtractor instance, int minX, int minY, int maxX, int maxY, int color, Operation<Void> original) {
-		ChatAnimation.wrap(instance, calculateDisplacement(), () -> original.call(instance, minX, minY, maxX, maxY, color));
-	}
-
-	@WrapOperation(
-		method = "render",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V"
-		)
-	)
-	private void wrapScreenRender(ChatScreen instance, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, Operation<Void> original) {
-		ChatAnimation.wrap(guiGraphics, calculateDisplacement(), () -> original.call(instance, guiGraphics, mouseX, mouseY, partialTick));
-	}
-    *///? }
-
-	//? 26.1 || 26.2 {
-	@WrapOperation(
+		//~ if >=26.1 'render' -> 'extractRenderState'
 		method = "extractRenderState",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V")
 	)
@@ -120,11 +61,22 @@ public class ChatScreenMixin {
 	}
 
 	@WrapOperation(
+		//~ if >=26.1 'render' -> 'extractRenderState'
 		method = "extractRenderState",
+		//~ if >=26.1 'render' -> 'extractRenderState'
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V")
 	)
-	private void wrapSuperAndSuggestions(ChatScreen instance, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, Operation<Void> original) {
+	private void wrapScreenRender(ChatScreen instance, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, Operation<Void> original) {
 		ChatAnimation.wrap(graphics, calculateDisplacement(), () -> original.call(instance, graphics, mouseX, mouseY, delta));
 	}
-	//? }
+
+	//? if <= 1.21.5 {
+	/*@WrapOperation(
+		method = "render",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/EditBox;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V")
+	)
+	private void wrapInputRender(EditBox instance, GuiGraphicsExtractor graphics, int i, int j, float v, Operation<Void> original) {
+		ChatAnimation.wrap(graphics, calculateDisplacement(), () -> original.call(instance, graphics, i, j, v));
+	}
+	*///? }
 }

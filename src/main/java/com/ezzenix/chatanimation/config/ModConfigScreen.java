@@ -35,7 +35,7 @@ public class ModConfigScreen extends Screen {
     @Override
 	//~ if >=26.1 'render' -> 'extractRenderState'
 	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int i, int j, float f) {
-		//? if <1.21
+		//? 1.20.1
         //this.renderBackground(graphics);
 
 		int y = this.height / 2 - 100;

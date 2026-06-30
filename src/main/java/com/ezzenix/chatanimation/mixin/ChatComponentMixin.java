@@ -20,10 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//? >=26.1 {
-import net.minecraft.client.multiplayer.chat.GuiMessageSource;
-//? }
-
 @Mixin(ChatComponent.class)
 public class ChatComponentMixin {
     @Shadow private int chatScrollbarPos;
@@ -54,8 +50,8 @@ public class ChatComponentMixin {
 
 	//? >=26.1 {
 	@Inject(method = "addMessage", at = @At("TAIL"))
-	private void addMessage(Component contents, MessageSignature signature, GuiMessageSource source, net.minecraft.client.multiplayer.chat.GuiMessageTag tag, CallbackInfo ci) {
-		//? } else {
+	private void addMessage(Component contents, MessageSignature signature, net.minecraft.client.multiplayer.chat.GuiMessageSource source, net.minecraft.client.multiplayer.chat.GuiMessageTag tag, CallbackInfo ci) {
+	//? } else {
 	/*@Inject(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V", at = @At("TAIL"))
 	private void addMessage(Component chatComponent, MessageSignature headerSignature, net.minecraft.client.multiplayer.chat.GuiMessageTag tag, CallbackInfo ci) {
 	*///? }
@@ -66,14 +62,14 @@ public class ChatComponentMixin {
 		CHAT OFFSET
 	 */
 
-	//? 1.20.1 {
+	//? <=1.20.4 {
 	/*@WrapMethod(method = "render")
 	private void wrapRender(GuiGraphicsExtractor guiGraphics, int tickCount, int mouseX, int mouseY, Operation<Void> original) {
 		ChatAnimation.wrap(guiGraphics, calculateDisplacement(), () -> original.call(guiGraphics, tickCount, mouseX, mouseY));
 	}
 	*///? }
 
-    //? 1.21.1 || 1.21.10 {
+    //? >=1.20.5 && <=1.21.10 {
     /*@WrapMethod(method = "render")
 	private void wrapRender(GuiGraphicsExtractor guiGraphics, int tickCount, int mouseX, int mouseY, boolean focused, Operation<Void> original) {
 		ChatAnimation.wrap(guiGraphics, calculateDisplacement(), () -> original.call(guiGraphics, tickCount, mouseX, mouseY, focused));
@@ -88,15 +84,12 @@ public class ChatComponentMixin {
 			target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IIZ)V"
 		)
 	)
-	private void wrapRender(
-		ChatComponent instance, ChatComponent.ChatGraphicsAccess guiGraphicsAccess, int i, int j, boolean bl, Operation<Void> original,
-		@Local(argsOnly = true) GuiGraphicsExtractor context
-	) {
+	private void wrapRender(ChatComponent instance, ChatComponent.ChatGraphicsAccess guiGraphicsAccess, int i, int j, boolean bl, Operation<Void> original, @Local(argsOnly = true) GuiGraphicsExtractor context) {
 		ChatAnimation.wrap(context, calculateDisplacement(), () -> original.call(instance, guiGraphicsAccess, i, j, bl));
 	}
     *///? }
 
-	//? 26.1 || 26.2 {
+	//? >=26.1 {
 	@WrapOperation(
 		method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;IIILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;Z)V",
 		at = @At(
@@ -113,21 +106,14 @@ public class ChatComponentMixin {
 		OPACITY FADING
 	 */
 
-	//? 1.20.1 || 1.21.1 {
+	//? <=1.21.5 {
 	/*@ModifyVariable(method = "render", at = @At("STORE"), ordinal = 3)
 	private double modifyChatOpacity(double original, @Local GuiMessage.Line line, @Local(argsOnly = true, ordinal = 0) int currentTick) {
 		return original * ChatAnimation.getOpacityFactor(currentTick - line.addedTime());
 	}
 	*///? }
 
-	//? 1.21.10 {
-	/*@ModifyVariable(method = "forEachLine", at = @At("STORE"), ordinal = 0)
-	private float modifyChatOpacity(float original, @Local GuiMessage.Line line, @Local(argsOnly = true, ordinal = 1) int currentTick) {
-		return original * (float)ChatAnimation.getOpacityFactor(currentTick - line.addedTime());
-	}
-	*///? }
-
-	//? 1.21.11 || 26.1 || 26.2 {
+	//? >=1.21.6 {
 	@ModifyVariable(method = "forEachLine", at = @At("STORE"), ordinal = 0)
 	private float modifyChatOpacity(float original, @Local GuiMessage.Line line) {
 		int currentTick = Minecraft.getInstance().gui.hud.getGuiTicks();

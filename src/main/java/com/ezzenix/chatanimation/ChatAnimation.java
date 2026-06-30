@@ -48,14 +48,22 @@ public class ChatAnimation implements ModInitializer {
     public static final String CONFIG_FILE = "chatanimation.json";
 
     /*? if forge {*/
-    /*public ChatAnimation(final FMLJavaModLoadingContext context) {
+	/*//? if 1.20.2 {
+	/^public ChatAnimation() {
+	^///? } else {
+    public ChatAnimation(final FMLJavaModLoadingContext context) {
+	//? }
         File configFile = FMLPaths.CONFIGDIR.get().resolve(ChatAnimation.CONFIG_FILE).toFile();
         ModConfig.getConfig().load(configFile);
 
-        context.registerExtensionPoint(
-                ConfigScreenHandler.ConfigScreenFactory.class,
-                () -> new ConfigScreenHandler.ConfigScreenFactory((c, parent) -> ModConfigScreen.create(parent))
-        );
+		//? if 1.20.2 {
+		/^net.minecraftforge.fml.ModLoadingContext.get().registerExtensionPoint(
+		^///? } else {
+		context.registerExtensionPoint(
+		//? }
+			ConfigScreenHandler.ConfigScreenFactory.class,
+			() -> new ConfigScreenHandler.ConfigScreenFactory((c, parent) -> ModConfigScreen.create(parent))
+		);
     }
     *//*?}*/
 
@@ -78,14 +86,14 @@ public class ChatAnimation implements ModInitializer {
 
 	public static void wrap(GuiGraphicsExtractor graphics, float displacement, Runnable runnable) {
 		if (displacement != 0) {
-			//~ if >1.21.1 'pushPose' -> 'pushMatrix'
+			//~ if >=1.21.6 'pushPose' -> 'pushMatrix'
 			graphics.pose().pushMatrix();
-			//~ if >1.21.1 '(0, displacement, 0)' -> '(0, displacement)'
+			//~ if >=1.21.6 '(0, displacement, 0)' -> '(0, displacement)'
 			graphics.pose().translate(0, displacement);
 		}
 		runnable.run();
 		if (displacement != 0) {
-			//~ if >1.21.1 'popPose' -> 'popMatrix'
+			//~ if >=1.21.6 'popPose' -> 'popMatrix'
 			graphics.pose().popMatrix();
 		}
 	}

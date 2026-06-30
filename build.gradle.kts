@@ -30,6 +30,7 @@ fun fetchLatestChangelog() : String {
 publishMods {
 	dryRun = false
 	changelog = fetchLatestChangelog()
+	displayName = mod.version
 
 	if (mod.isFabric) {
 		modLoaders.add("quilt")
@@ -42,7 +43,14 @@ publishMods {
 		if (mod.isFabric) {
 			optional("modmenu")
 		}
-		minecraftVersionList(mod.prop("supported_versions", mod.prop("minecraft_version")))
+		if (mod.hasProp("supported_to")) {
+			minecraftVersionRange {
+				start = mod.minecraftVersion
+				end = mod.prop("supported_to")
+			}
+		} else {
+			minecraftVersionList(mod.minecraftVersion)
+		}
     }
 
     curseforge {
@@ -53,7 +61,14 @@ publishMods {
 		if (mod.isFabric) {
 			optional("modmenu")
 		}
-		minecraftVersionList(mod.prop("supported_versions", mod.prop("minecraft_version")))
+		if (mod.hasProp("supported_to")) {
+			minecraftVersionRange {
+				start = mod.minecraftVersion
+				end = mod.prop("supported_to")
+			}
+		} else {
+			minecraftVersionList(mod.minecraftVersion)
+		}
     }
 }
 
@@ -93,6 +108,15 @@ loom {
 	if (mod.isForge) {
 		forge {
 			mixinConfig("${mod.id}.mixins.json")
+		}
+	}
+}
+
+gradle.projectsEvaluated {
+	allprojects.filter { it.tasks.names.contains("runClient") }.forEach { project ->
+		tasks.register("Run ${project.name}") {
+			dependsOn(project.tasks.named("runClient"))
+			group = "runs"
 		}
 	}
 }
