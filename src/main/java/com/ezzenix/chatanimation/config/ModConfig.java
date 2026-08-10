@@ -22,4 +22,6 @@ public class ModConfig extends BaseConfig {
 	@Entry(name="Duration", min=10, max=800, suffix="ms")
 	public static int fadeTimeTextField = 170;
 
+	@Entry(name="Show Chat Only When Typing")
+	public static boolean showChatOnlyWhenTyping = false;
 }
