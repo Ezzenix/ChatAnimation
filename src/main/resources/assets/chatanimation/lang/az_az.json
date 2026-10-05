@@ -1,0 +1,12 @@
+{
+	"chatanimation.config._messages": "Mesajlar",
+	"chatanimation.config.enableMessageAnimation": "Mesajları canlandır",
+	"chatanimation.config.fadeTimeMessage": "Müddət",
+	"chatanimation.config.removeMessageIndicator": "Göstərici xəttini gizlət",
+	"chatanimation.config.removeMessageIndicator.tooltip": "Mesajların solundakı göstərici xəttini gizlədir.",
+	"chatanimation.config.enableOpacity": "Tutqunluq animasiyası",
+
+	"chatanimation.config._input": "Mətn daxiletmə sahəsi",
+	"chatanimation.config.enableTextFieldAnimation": "Mətn daxiletmə sahəsini canlandır",
+	"chatanimation.config.fadeTimeTextField": "Müddət"
+}
