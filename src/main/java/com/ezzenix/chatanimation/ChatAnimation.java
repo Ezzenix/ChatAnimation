@@ -61,7 +61,7 @@ public class ChatAnimation implements ModInitializer {
 	}
 
 	//? if forge {
-	/*public ChatAnimation(final FMLJavaModLoadingContext context) {
+	/*public ChatAnimation() {
 		initialize();
 	}
     *///? }
