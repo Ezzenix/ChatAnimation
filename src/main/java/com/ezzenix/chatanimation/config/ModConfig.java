@@ -26,4 +26,6 @@ public class ModConfig extends EmConfig {
 	@Option(min=10, max=800, isSlider=true, suffix="ms")
 	public static int fadeTimeTextField = 170;
 
+	@Entry(name="Show Chat Only When Typing")
+	public static boolean showChatOnlyWhenTyping = false;
 }
