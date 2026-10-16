@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.5
+
+- Add Italian translation ([#35](https://github.com/Ezzenix/ChatAnimation/pull/35))
+- Add Azerbaijani translation ([#36](https://github.com/Ezzenix/ChatAnimation/pull/36))
+- Add Argentine Spanish translation ([#37](https://github.com/Ezzenix/ChatAnimation/pull/37))
+- Fix reference map could not be read warning in logs
+
 ## 1.3.4
 
 - Fix crash on Forge 1.21
