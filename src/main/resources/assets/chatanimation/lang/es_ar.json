@@ -1,0 +1,12 @@
+{
+	"chatanimation.config._messages": "Mensajes",
+	"chatanimation.config.enableMessageAnimation": "Animar mensajes",
+	"chatanimation.config.fadeTimeMessage": "Duración",
+	"chatanimation.config.removeMessageIndicator": "Ocultar línea indicadora",
+	"chatanimation.config.removeMessageIndicator.tooltip": "Oculta la línea indicadora a la izquierda de los mensajes.",
+	"chatanimation.config.enableOpacity": "Animar opacidad",
+
+	"chatanimation.config._input": "Campo de texto",
+	"chatanimation.config.enableTextFieldAnimation": "Animar campo de texto",
+	"chatanimation.config.fadeTimeTextField": "Duración"
+}
