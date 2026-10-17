@@ -99,6 +99,7 @@ public class ChatComponentMixin {
 		)
 	)
 	private void wrapRender(ChatComponent instance, ChatComponent.ChatGraphicsAccess queueMessage, int restrictedMessageWidth, int restrictedMessage, ChatComponent.DisplayMode alpha, Operation<Void> original, @Local(argsOnly = true) GuiGraphicsExtractor graphics) {
+		if (ModConfig.showChatOnlyWhenTyping && !instance.isChatFocused()) return;
 		ChatAnimation.wrap(graphics, calculateDisplacement(), () -> original.call(instance, queueMessage, restrictedMessageWidth, restrictedMessage, alpha));
 	}
 	//? }
